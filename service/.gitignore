@@ -31,4 +31,3 @@ coverage
 build
 
 .env
-.env.example

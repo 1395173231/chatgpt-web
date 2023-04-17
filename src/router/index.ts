@@ -46,6 +46,16 @@ export const router = createRouter({
 
 setupPageGuard(router)
 
+// 加入百度统计
+router.beforeEach((to, from, next) => {
+  if (to.path) {
+    if (window._hmt){
+      window._hmt.push(['_trackPageview', `/#${to.fullPath}`])
+    }
+  }
+  next()
+})
+
 export async function setupRouter(app: App) {
   app.use(router)
   await router.isReady()
