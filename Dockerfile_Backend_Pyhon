@@ -1,0 +1,31 @@
+# build front-end
+FROM node:lts-hydrogen AS frontend
+
+RUN npm install pnpm -g
+
+WORKDIR /app
+
+COPY ./package.json /app
+
+COPY ./pnpm-lock.yaml /app
+
+RUN pnpm install
+
+COPY . /app
+
+RUN pnpm run build
+
+# build backend
+FROM python:3.11 as backend
+
+WORKDIR /app
+
+COPY /service/python/requirements.txt /app
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY /service/python /app
+COPY --from=frontend /app/dist /app/static
+
+EXPOSE 3002
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3002"]
